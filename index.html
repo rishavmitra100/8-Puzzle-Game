@@ -179,7 +179,7 @@
         <div class="grid grid-cols-2 gap-3 w-full max-w-[min(90vw,400px)]">
             <button id="shuffleBtn" onclick="shuffle()" class="btn-retro btn-pink rounded-none">Shuffle</button>
             <button id="resetBtn" onclick="resetGame()" class="btn-retro btn-pink rounded-none">Reset</button>
-            <button id="solveBtn" onclick="autoSolve()" class="btn-retro btn-blue col-span-2 py-4 rounded-none text-xs">Run A* Logic</button>
+            <button id="solveBtn" onclick="autoSolve()" class="btn-retro btn-blue col-span-2 py-4 rounded-none text-xs">Auto Solve</button>
         </div>
 
         <!-- Tips -->
@@ -294,7 +294,7 @@
                 for (let s of path) { await new Promise(r => setTimeout(r, 200)); state = s; steps++; render(); }
             } else { alert("UNABLE TO SOLVE"); }
 
-            isSolving = false; solveBtn.textContent = "RUN A* LOGIC"; solveBtn.disabled = false;
+            isSolving = false; solveBtn.textContent = "AUTO SOLVE"; solveBtn.disabled = false;
             stopTimer(); checkWin();
         }
 
