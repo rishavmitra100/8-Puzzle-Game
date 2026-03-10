@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "8-Puzzle Retro Cyber",
   "short_name": "8-Puzzle",
   "description": "A retro browser-based 8-Puzzle game with A* auto-solver",
@@ -20,3 +21,21 @@
     }
   ]
 }
+=======
+  "name": "8-Puzzle Solver",
+  "short_name": "8-Puzzle",
+  "description": "A professional browser-based 8-Puzzle game with A* auto-solver",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0f1f4",
+  "theme_color": "#1e2025",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
+>>>>>>> 303485619efebe1bd5218682f48d9bb03530e175

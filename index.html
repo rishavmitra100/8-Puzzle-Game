@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -341,4 +342,447 @@
         render();
     </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8-Puzzle | Retro-Cyber</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700&display=swap');
+        
+        :root {
+            --color-black: #000000;
+            --color-purple-dark: #5f4886;
+            --color-purple-light: #8767bd;
+            --color-blue: #70b9fb;
+            --color-pink: #fe0094;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-black);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: radial-gradient(circle at center, #1a0b2e 0%, #000000 100%);
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            text-shadow: 3px 3px 0px var(--color-pink);
+            letter-spacing: -2px;
+        }
+
+        .pixel-border {
+            border: 4px solid var(--color-purple-light);
+            box-shadow: 0 0 15px rgba(135, 103, 189, 0.4);
+        }
+
+        .tile-transition {
+            transition: transform 0.15s steps(4), background-color 0.2s;
+        }
+
+        .grid-container {
+            aspect-ratio: 1 / 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 8px;
+            background-color: var(--color-black);
+        }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.25rem;
+            background-color: var(--color-purple-dark);
+            border: 2px solid var(--color-purple-light);
+            cursor: pointer;
+            user-select: none;
+            color: var(--color-blue);
+            text-shadow: 2px 2px 0px var(--color-black);
+            position: relative;
+        }
+
+        .tile::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-top: 2px solid rgba(255,255,255,0.1);
+            border-left: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .tile:hover {
+            background-color: var(--color-purple-light);
+            color: #ffffff;
+            box-shadow: inset 0 0 10px var(--color-blue);
+        }
+
+        .tile.empty {
+            background: rgba(95, 72, 134, 0.1);
+            border: 2px dashed var(--color-purple-dark);
+            cursor: default;
+            box-shadow: none;
+        }
+
+        .tile.empty::after { display: none; }
+
+        .btn-retro {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            padding: 12px;
+            border: 4px solid;
+            transition: all 0.1s;
+            text-transform: uppercase;
+        }
+
+        .btn-pink {
+            background-color: var(--color-pink);
+            border-color: #c40073;
+            color: white;
+        }
+
+        .btn-pink:hover:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: -4px -4px 0px #c40073;
+        }
+
+        .btn-blue {
+            background-color: var(--color-blue);
+            border-color: #4a8dc9;
+            color: var(--color-black);
+        }
+
+        .btn-blue:hover:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: -4px -4px 0px #4a8dc9;
+        }
+
+        .status-pill {
+            background-color: var(--color-black);
+            border: 2px solid var(--color-purple-light);
+            padding: 8px 12px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: var(--color-blue);
+        }
+
+        #timer, #stepCounter {
+            color: var(--color-pink);
+        }
+
+        /* Success Modal Styles */
+        .modal-retro {
+            background-color: var(--color-black);
+            border: 6px solid var(--color-pink);
+            box-shadow: 0 0 30px var(--color-pink);
+        }
+
+        @media (max-width: 400px) {
+            .tile { font-size: 1rem; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="max-w-md w-full space-y-8 my-auto">
+        <!-- Header -->
+        <div class="text-center space-y-4">
+            <h1 class="text-3xl text-white">8-PUZZLE</h1>
+            <p class="text-xs uppercase tracking-widest text-[var(--color-purple-light)] font-bold">A* SOLVER</p>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="flex justify-between gap-4 items-center">
+            <div class="status-pill flex-1 flex flex-col items-center gap-2">
+                <span class="opacity-50">STEPS</span>
+                <span id="stepCounter">0</span>
+            </div>
+            <div class="status-pill flex-1 flex flex-col items-center gap-2">
+                <span class="opacity-50">TIME</span>
+                <span id="timer">00:00</span>
+            </div>
+        </div>
+
+        <!-- Game Board -->
+        <div id="board" class="grid-container p-2 pixel-border relative bg-black">
+            <!-- Tiles generated by JS -->
+        </div>
+
+        <!-- Controls -->
+        <div class="grid grid-cols-2 gap-4">
+            <button id="shuffleBtn" onclick="shuffle()" class="btn-retro btn-pink rounded-none">Shuffle</button>
+            <button id="resetBtn" onclick="resetGame()" class="btn-retro btn-pink rounded-none">Reset</button>
+            <button id="solveBtn" onclick="autoSolve()" class="btn-retro btn-blue col-span-2 py-4 rounded-none text-xs">Auto Solve</button>
+        </div>
+
+        <!-- Desktop Tips -->
+        <div class="text-center text-[8px] font-bold text-[var(--color-purple-light)] uppercase tracking-widest space-y-1 pb-4">
+            <p>Input: Click or Arrow Keys</p>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-50 p-6 backdrop-blur-md">
+        <div class="modal-retro p-8 rounded-none max-w-sm w-full text-center space-y-6">
+            
+            <div class="space-y-4">
+                <h2 class="text-xl font-bold text-[var(--color-pink)] font-['Press_Start_2P']">SOLVED!</h2>
+                <p class="text-[var(--color-blue)] text-xs font-['Press_Start_2P'] leading-relaxed" id="successMessage">STEPS: 0</p>
+            </div>
+            <button onclick="closeModal()" class="w-full btn-retro btn-blue rounded-none">RESTART</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Game State ---
+        let state = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+        const goal = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+        let steps = 0;
+        let timerInterval = null;
+        let startTime = null;
+        let isSolving = false;
+        let gameStarted = false;
+
+        const boardEl = document.getElementById('board');
+        const stepEl = document.getElementById('stepCounter');
+        const timerEl = document.getElementById('timer');
+        const solveBtn = document.getElementById('solveBtn');
+
+        // --- UI Rendering ---
+
+        function render() {
+            boardEl.innerHTML = '';
+            state.forEach((tile, index) => {
+                const div = document.createElement('div');
+                div.className = `tile tile-transition ${tile === 0 ? 'empty' : ''}`;
+                div.textContent = tile === 0 ? '' : tile;
+                if (tile !== 0 && !isSolving) {
+                    div.onclick = () => handleTileClick(index);
+                }
+                boardEl.appendChild(div);
+            });
+            stepEl.textContent = steps;
+        }
+
+        function handleTileClick(index) {
+            if (isSolving) return;
+            const zeroIndex = state.indexOf(0);
+            if (isAdjacent(index, zeroIndex)) {
+                moveTile(index, zeroIndex);
+            }
+        }
+
+        function isAdjacent(idx1, idx2) {
+            const x1 = idx1 % 3, y1 = Math.floor(idx1 / 3);
+            const x2 = idx2 % 3, y2 = Math.floor(idx2 / 3);
+            return Math.abs(x1 - x2) + Math.abs(y1 - y2) === 1;
+        }
+
+        function moveTile(from, to) {
+            if (!gameStarted) startTimer();
+            [state[from], state[to]] = [state[to], state[from]];
+            steps++;
+            render();
+            checkWin();
+        }
+
+        // --- A* Solver Logic ---
+
+        function getManhattan(arr) {
+            let dist = 0;
+            for (let i = 0; i < 9; i++) {
+                if (arr[i] === 0) continue;
+                const val = arr[i];
+                const tarIdx = val - 1; 
+                const curX = i % 3, curY = Math.floor(i / 3);
+                const tarX = tarIdx % 3, tarY = Math.floor(tarIdx / 3);
+                dist += Math.abs(curX - tarX) + Math.abs(curY - tarY);
+            }
+            return dist;
+        }
+
+        function getInversions(arr) {
+            let inv = 0;
+            const flat = arr.filter(x => x !== 0);
+            for (let i = 0; i < flat.length; i++) {
+                for (let j = i + 1; j < flat.length; j++) {
+                    if (flat[i] > flat[j]) inv++;
+                }
+            }
+            return inv;
+        }
+
+        async function autoSolve() {
+            if (isSolving || JSON.stringify(state) === JSON.stringify(goal)) return;
+            
+            isSolving = true;
+            solveBtn.textContent = "SOLVING...";
+            solveBtn.disabled = true;
+
+            const openList = [{ state: [...state], g: 0, h: getManhattan(state), parent: null }];
+            const closedSet = new Set();
+            let solutionNode = null;
+
+            while (openList.length > 0) {
+                openList.sort((a, b) => (a.g + a.h) - (b.g + b.h));
+                const current = openList.shift();
+                const sStr = current.state.join(',');
+
+                if (sStr === goal.join(',')) {
+                    solutionNode = current;
+                    break;
+                }
+
+                closedSet.add(sStr);
+
+                const zIdx = current.state.indexOf(0);
+                const zX = zIdx % 3, zY = Math.floor(zIdx / 3);
+
+                const neighbors = [[0,1],[0,-1],[1,0],[-1,0]];
+                for (let [dx, dy] of neighbors) {
+                    const nX = zX + dx, nY = zY + dy;
+                    if (nX >= 0 && nX < 3 && nY >= 0 && nY < 3) {
+                        const nIdx = nY * 3 + nX;
+                        const nextState = [...current.state];
+                        [nextState[zIdx], nextState[nIdx]] = [nextState[nIdx], nextState[zIdx]];
+                        
+                        if (!closedSet.has(nextState.join(','))) {
+                            openList.push({
+                                state: nextState,
+                                g: current.g + 1,
+                                h: getManhattan(nextState),
+                                parent: current
+                            });
+                        }
+                    }
+                }
+                
+                if (closedSet.size > 8000) break;
+            }
+
+            if (solutionNode) {
+                const path = [];
+                let curr = solutionNode;
+                while (curr.parent) {
+                    path.push(curr.state);
+                    curr = curr.parent;
+                }
+                path.reverse();
+
+                for (let stepState of path) {
+                    await new Promise(r => setTimeout(r, 200));
+                    state = stepState;
+                    steps++;
+                    render();
+                }
+            } else {
+                alert("SYSTEM ERROR: UNABLE TO CALCULATE PATH");
+            }
+
+            isSolving = false;
+            solveBtn.textContent = "RUN A* LOGIC";
+            solveBtn.disabled = false;
+            stopTimer();
+            checkWin();
+        }
+
+        // --- Game Flow ---
+
+        function shuffle() {
+            if (isSolving) return;
+            stopTimer();
+            gameStarted = false;
+            steps = 0;
+            timerEl.textContent = "00:00";
+            
+            do {
+                state.sort(() => Math.random() - 0.5);
+            } while (getInversions(state) % 2 !== 0 || JSON.stringify(state) === JSON.stringify(goal));
+            
+            render();
+        }
+
+        function resetGame() {
+            if (isSolving) return;
+            stopTimer();
+            gameStarted = false;
+            steps = 0;
+            state = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+            timerEl.textContent = "00:00";
+            render();
+        }
+
+        function checkWin() {
+            if (JSON.stringify(state) === JSON.stringify(goal) && steps > 0) {
+                stopTimer();
+                setTimeout(() => {
+                    document.getElementById('successMessage').textContent = `STEPS: ${steps}`;
+                    document.getElementById('successModal').classList.remove('hidden');
+                }, 300);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            resetGame();
+        }
+
+        // --- Timer Utility ---
+
+        function startTimer() {
+            gameStarted = true;
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const s = (elapsed % 60).toString().padStart(2, '0');
+                timerEl.textContent = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // --- Input Handling ---
+
+        window.addEventListener('keydown', (e) => {
+            if (isSolving) return;
+            const zIdx = state.indexOf(0);
+            const zX = zIdx % 3, zY = Math.floor(zIdx / 3);
+            let moveIdx = -1;
+
+            if (e.key === 'ArrowUp' && zY < 2) moveIdx = zIdx + 3;
+            if (e.key === 'ArrowDown' && zY > 0) moveIdx = zIdx - 3;
+            if (e.key === 'ArrowLeft' && zX < 2) moveIdx = zIdx + 1;
+            if (e.key === 'ArrowRight' && zX > 0) moveIdx = zIdx - 1;
+
+            if (moveIdx !== -1) handleTileClick(moveIdx);
+        });
+
+        // --- Service Worker Register ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {
+                    console.log('SW registration skipped (local dev).');
+                });
+            });
+        }
+
+        render();
+    </script>
+</body>
+>>>>>>> 303485619efebe1bd5218682f48d9bb03530e175
 </html>
