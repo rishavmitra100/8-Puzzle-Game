@@ -6,9 +6,6 @@
     <title>8-Puzzle | Retro-Cyber</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/logo.ico" type="image/x-icon">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700&display=swap');
         
@@ -310,7 +307,7 @@
 
         function resetGame() { if (isSolving) return; stopTimer(); gameStarted = false; steps = 0; state = [1, 2, 3, 4, 5, 6, 7, 8, 0]; timerEl.textContent = "00:00"; render(); }
 
-        function checkWin() { if (JSON.stringify(state) === goal.join(',') || (JSON.stringify(state) === JSON.stringify(goal) && steps > 0)) {
+        function checkWin() { if (JSON.stringify(state) === JSON.stringify(goal) && steps > 0) {
             stopTimer(); setTimeout(() => { document.getElementById('successMessage').textContent = `STEPS: ${steps}`; document.getElementById('successModal').classList.remove('hidden'); }, 300);
         }}
 
@@ -333,10 +330,6 @@
             if (e.key === 'ArrowRight' && zX > 0) moveIdx = zIdx - 1;
             if (moveIdx !== -1) handleTileClick(moveIdx);
         });
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
-        }
 
         render();
     </script>
